@@ -24,7 +24,7 @@
 
         <provider
             android:name="me.eirinimitsopoulou.popularmovies.Data.FavouriteProvider"
-            android:authorities="com.example.android.mypopularmoviesapp"
+            android:authorities="me.eirinimitsopoulou.popularmovies"
             android:exported="false"/>
     </application>
 
