@@ -1,138 +1,249 @@
 package me.eirinimitsopoulou.popularmovies;
 
-import android.os.AsyncTask;
-import android.os.Bundle;
+import android.app.LoaderManager;
+import android.content.Intent;
+import android.content.Loader;
+import android.database.Cursor;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import org.json.JSONException;
+import me.eirinimitsopoulou.popularmovies.Adapters.MoviesListAdapter;
+import me.eirinimitsopoulou.popularmovies.Data.FavouriteProvider;
+import me.eirinimitsopoulou.popularmovies.Data.FavouriteContract;
+import me.eirinimitsopoulou.popularmovies.Models.MovieResponse;
+import me.eirinimitsopoulou.popularmovies.Api.ApiManager;
+import me.eirinimitsopoulou.popularmovies.Models.Movie;
+import me.eirinimitsopoulou.popularmovies.Api.ApiService;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.List;
 
-import me.eirinimitsopoulou.popularmovies.Adapters.MovieListAdapter;
-import me.eirinimitsopoulou.popularmovies.Models.Movie;
-import me.eirinimitsopoulou.popularmovies.Utilities.JsonUtils;
-import me.eirinimitsopoulou.popularmovies.Utilities.NetworkUtils;
-
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * Created by eirinimitsopoulou on 07/04/2018.
  */
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements MoviesListAdapter.OnItemClickListener, LoaderManager.LoaderCallbacks<Cursor> {
 
-    private static final int DEFAULT = GetMoviesTask.POPULAR_MOVIES;
+    @BindView((R.id.movie_list))
+    RecyclerView recyclerview;
 
-    private RecyclerView recyclerview;
-    private ProgressBar loading;
+    private static final String FAVORITE = "state_favourite";
+    private static final String POPULAR = "state_popular";
+    private static Retrofit retrofit = null;
+    private static boolean favourite;
+    private static boolean popular = true;
+    private ArrayList<Movie> movie;
+    private ArrayList<Movie> movie2;
+    private static final int LOADER = 101;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        toolbar.setTitle(getTitle());
+        recyclerview.setHasFixedSize(true);
+        recyclerview.setLayoutManager(new GridLayoutManager(this, 2));
 
-        loading = findViewById(R.id.loading);
-        recyclerview = findViewById(R.id.movie_list);
-        assert recyclerview != null;
-        setupRecyclerView();
+        if (savedInstanceState != null) {
 
-        loadData(DEFAULT);
+            favourite = savedInstanceState.getBoolean(FAVORITE);
+            popular = savedInstanceState.getBoolean(POPULAR);
+
+            if (favourite) {
+                LoaderManager mLoaderManager = getLoaderManager();
+                mLoaderManager.initLoader(LOADER, null, this);
+            } else
+                connectAndGetApiData(popular);
+
+        } else {
+            connectAndGetApiData(true);
+        }
     }
+
+
+    public void connectAndGetApiData(boolean isPopular) {
+
+        favourite = false;
+        if (retrofit == null) {
+            retrofit = new Retrofit.Builder()
+                    .baseUrl(ApiManager.BASE_URL)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+        }
+
+        ApiService movieApiService = retrofit.create(ApiService.class);
+
+
+        if (isPopular == true) {
+
+            Call<MovieResponse> call = movieApiService.getPopularMovies(ApiManager.getApiKey());
+            call.enqueue(new Callback<MovieResponse>() {
+                @Override
+                public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
+
+
+                    if (response.isSuccessful()) {
+
+                        movie = response.body().getResults();
+                        recyclerview.setAdapter(new MoviesListAdapter(movie, R.layout.movie_poster_fragment, getApplicationContext()));
+                        MoviesListAdapter.setOnItemClickListener(MainActivity.this);
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<MovieResponse> call, Throwable t) {
+
+                    if (t instanceof IOException)
+                        Toast.makeText(getApplicationContext(), getResources().getString(R.string.error_loading_movies), Toast.LENGTH_SHORT).show();
+                }
+            });
+
+        } else {
+            Call<MovieResponse> call = movieApiService.getTopRatedMovies(ApiManager.getApiKey());
+            call.enqueue(new Callback<MovieResponse>() {
+                @Override
+                public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
+
+                    if (response.isSuccessful()) {
+
+                        movie = response.body().getResults();
+                        recyclerview.setAdapter(new MoviesListAdapter(movie, R.layout.movie_poster_fragment, getApplicationContext()));
+                        MoviesListAdapter.setOnItemClickListener(MainActivity.this);
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<MovieResponse> call, Throwable t) {
+
+                    if (t instanceof IOException)
+                        Toast.makeText(getApplicationContext(), getResources().getString(R.string.error_loading_movies), Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu, menu);
+        getMenuInflater().inflate(R.menu.menu, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+
         switch (item.getItemId()) {
             case R.id.popular:
-                loadData(GetMoviesTask.POPULAR_MOVIES);
+                popular = true;
+                connectAndGetApiData(popular);
                 break;
-            default:
-                loadData(GetMoviesTask.TOP_RATED_MOVIES);
+            case R.id.top_rated:
+                popular = false;
+                connectAndGetApiData(popular);
+                break;
+            case R.id.favourite:
+                LoaderManager mLoaderManager = getLoaderManager();
+                mLoaderManager.initLoader(LOADER, null, this);
+                favourite = true;
+                MoviesListAdapter.setOnItemClickListener(MainActivity.this);
+                break;
 
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private void setupRecyclerView() {
-        recyclerview.setAdapter(new MovieListAdapter(this, this));
-    }
+    @Override
+    public void onItemClick(int position) {
 
-    private void loadData(int sortType) {
-        new GetMoviesTask().execute(sortType);
-    }
+        Intent detailIntent = new Intent(this, DetailActivity.class);
+        Movie clickedItem;
 
-    private void showMovies(List<Movie> movies) {
-        ((MovieListAdapter) recyclerview.getAdapter()).setData(movies);
-    }
-
-    private void error() {
-        Toast.makeText(this, R.string.error_loading_movies, Toast.LENGTH_SHORT).show();
-    }
-
-    class GetMoviesTask extends AsyncTask<Integer, Void, List<Movie>> {
-
-        static final int POPULAR_MOVIES = 0;
-        static final int TOP_RATED_MOVIES = 1;
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            loading.setVisibility(View.VISIBLE);
+        if (favourite) {
+            clickedItem = movie2.get(position);
+        } else {
+            clickedItem = movie.get(position);
         }
 
-        @Override
-        protected List<Movie> doInBackground(Integer... params) {
-            URL url;
-            switch (params[0]) {
-                case POPULAR_MOVIES:
-                    url = NetworkUtils.buildPopularMoviesUrl();
-                    break;
-                case TOP_RATED_MOVIES:
-                    url = NetworkUtils.buildTopRatedMoviesUrl();
-                    break;
-                default:
-                    return null;
-            }
+        detailIntent.putExtra("id", clickedItem.getId());
+        detailIntent.putExtra("title", clickedItem.getTitle());
+        detailIntent.putExtra("releasedate", clickedItem.getRelease_date());
+        detailIntent.putExtra("backdroppath", clickedItem.getBackdrop_path());
+        detailIntent.putExtra("overview", clickedItem.getOverview());
+        detailIntent.putExtra("voteavarage", clickedItem.getVote_average());
+        detailIntent.putExtra("posterpath", clickedItem.getPoster_path());
+        startActivity(detailIntent);
+    }
 
-            ArrayList<Movie> array = null;
-            try {
-                array = JsonUtils.getMovieList(NetworkUtils.getResponseFromHttpUrl(url));
-            } catch (IOException e) {
-                System.out.println("FAILED TO EXTRACT JSON FROM URL: " + e);
-            } catch (JSONException e) {
-                System.out.println("JSON EXCEPTION: " + e);
-            }
-            return array;
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
+
+        switch (i) {
+            case LOADER:
+                Uri favQueryUri = FavouriteProvider.CONTENT_URI;
+                return new android.content.CursorLoader(this,
+                        favQueryUri,
+                        null,
+                        null,
+                        null,
+                        null);
+            default:
+                throw new RuntimeException("Loader not implemented " + LOADER);
         }
 
-        @Override
-        protected void onPostExecute(List<Movie> movies) {
-            loading.setVisibility(View.INVISIBLE);
-            if (!movies.isEmpty()) {
-                showMovies(movies);
-            } else {
-                error();
-            }
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+
+        movie2 = new ArrayList<>();
+        if (cursor.getCount() == 0) {
+            Toast.makeText(this, getResources().getString(R.string.nofavourites), Toast.LENGTH_SHORT).show();
+            return;
         }
+        cursor.moveToFirst();
+
+        do {
+            int movieId = cursor.getInt(cursor.getColumnIndex(FavouriteContract.MOVIE_ID));
+            String movieName = cursor.getString(cursor.getColumnIndex(FavouriteContract.MOVIE_TITLE));
+            String moviePlot = cursor.getString(cursor.getColumnIndex(FavouriteContract.MOVIE_OVERVIEW));
+            double movieRating = cursor.getDouble(cursor.getColumnIndex(FavouriteContract.MOVIE_AVERAGE_RATING));
+            String moviePoster = cursor.getString(cursor.getColumnIndex(FavouriteContract.MOVIE_POSTER_IMAGE));
+            String movieDate = cursor.getString(cursor.getColumnIndex(FavouriteContract.MOVIE_RELEASE_DATE));
+            String movieBackdrop = cursor.getString(cursor.getColumnIndex(FavouriteContract.MOVIE_BACKDROP_IMAGE));
+            movie2.add(new Movie(movieId, movieRating, movieName, moviePoster, movieBackdrop, moviePlot, movieDate));
+        } while (cursor.moveToNext());
+
+        recyclerview.setAdapter(new MoviesListAdapter(movie2, R.layout.movie_poster_fragment, getApplicationContext()));
+        recyclerview.setHasFixedSize(true);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+
+    }
+
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(FAVORITE, favourite);
+        outState.putBoolean(POPULAR, popular);
     }
 }

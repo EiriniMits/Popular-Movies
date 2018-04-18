@@ -3,11 +3,21 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="cardview_padding">8dp</dimen>
-    <dimen name="app_bar_height">180dp</dimen>
-    <dimen name="text_margin">16dp</dimen>
-    <dimen name="padding_top">68dp</dimen>
-    <dimen name="padding_top2">20dp</dimen>
+    <dimen name="imageHeight">235dp</dimen>
+    <dimen name="imageHeight2">220dp</dimen>
+    <dimen name="posterWidth">200dp</dimen>
+    <dimen name="posterHeight">250dp</dimen>
+    <dimen name="cardElevation">5dp</dimen>
     <dimen name="loading">42dp</dimen>
-    <dimen name="text_size">16sp</dimen>
-</resources>
 
+    <dimen name="margin_small">8dp</dimen>
+    <dimen name="margin_medium">12dp</dimen>
+    <dimen name="margin_large">16dp</dimen>
+    <dimen name="margin_xlarge">30dp</dimen>
+    <dimen name="margin_xxlarge">50dp</dimen>
+
+    <dimen name="text_xsmall">12sp</dimen>
+    <dimen name="text_small">13sp</dimen>
+    <dimen name="text_medium">14sp</dimen>
+    <dimen name="text_large">16sp</dimen>
+</resources>

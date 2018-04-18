@@ -3,5 +3,7 @@
     <color name="colorPrimary">#9f1c1c</color>
     <color name="colorPrimaryDark">#7c0303</color>
     <color name="colorAccent">#9f1c1c</color>
+    <color name="secondaryText">#868686</color>
     <color name="textColor">#111</color>
+    <color name="starColor">#ba1b1b</color>
 </resources>

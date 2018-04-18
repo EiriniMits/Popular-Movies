@@ -2,9 +2,14 @@
     <string name="app_name">PopMovies</string>
     <string name="title_popular">Popular</string>
     <string name="title_top_rated">Top Rated</string>
-    <string name="title_favourite">Favourite</string>
-    <string name="summary">Summary:</string>
-    <string name="release_date">Release Date: </string>
-    <string name="user_rating">User Rating: </string>
+    <string name="title_favourite">Favourites</string>
     <string name="error_loading_movies">Error loading movies...</string>
+    <string name="nofavourites"> Still No Favourites! </string>
+    <string name="summary">Summary</string>
+    <string name="release_date">Release Date</string>
+    <string name="user_rating">User Rating</string>
+    <string name="reviews">Reviews</string>
+    <string name="trailers">Trailers</string>
+    <string name="addedtofavourites"> Added to Favourites! </string>
+    <string name="removedfromfavourites"> Removed from Favourites! </string>
 </resources>

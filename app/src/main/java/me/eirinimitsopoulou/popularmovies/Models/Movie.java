@@ -1,43 +1,35 @@
 package me.eirinimitsopoulou.popularmovies.Models;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 /**
  * Created by eirinimitsopoulou on 07/04/2018.
  */
 
-public class Movie implements Parcelable {
+public class Movie {
 
-    private int id;
+    private Integer id;
     private String title;
-    private String poster;
-    private double voteAverage;
+    private String poster_path;
+    private String backdrop_path;
+    private double vote_average;
     private String overview;
-    private String releaseDate;
+    private String release_date;
 
-    public Movie(String title, String imageUrl, String overview, double userRating, String releaseDate) {
+    public Movie(Integer id, double vote_average, String title, String poster_path, String backdrop_path, String overview, String release_date) {
+        this.id = id;
+        this.vote_average = vote_average;
         this.title = title;
-        this.poster = imageUrl;
+        this.poster_path = poster_path;
+        this.backdrop_path = backdrop_path;
         this.overview = overview;
-        this.voteAverage = userRating;
-        this.releaseDate = releaseDate;
+        this.release_date = release_date;
     }
 
-    protected Movie(Parcel in) {
-        id = in.readInt();
-        title = in.readString();
-        poster = in.readString();
-        voteAverage = in.readDouble();
-        overview = in.readString();
-        releaseDate = in.readString();
-    }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -49,44 +41,25 @@ public class Movie implements Parcelable {
         this.title = title;
     }
 
-    public String getPoster() { return poster; }
+    public String getPoster_path() {
+        return poster_path;
+    }
 
-    public double getVoteAverage() {
-        return voteAverage;
+    public String getBackdrop_path() {
+        return backdrop_path;
+    }
+
+    public double getVote_average() {
+        return vote_average;
     }
 
     public String getOverview() {
         return overview;
     }
 
-    public String getReleaseDate() {
-        return releaseDate;
+    public String getRelease_date() {
+        return release_date;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(id);
-        dest.writeString(title);
-        dest.writeString(poster);
-        dest.writeDouble(voteAverage);
-        dest.writeString(overview);
-        dest.writeString(releaseDate);
-    }
-
-    public static final Parcelable.Creator<Movie> CREATOR = new Parcelable.Creator<Movie>() {
-        @Override
-        public Movie createFromParcel(Parcel in) {
-            return new Movie(in);
-        }
-
-        @Override
-        public Movie[] newArray(int size) {
-            return new Movie[size];
-        }
-    };
 }
+

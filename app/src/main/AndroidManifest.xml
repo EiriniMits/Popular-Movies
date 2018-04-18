@@ -3,16 +3,15 @@
     package="me.eirinimitsopoulou.popularmovies">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/ic_launcher_foreground"
         android:label="@string/app_name"
+        android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity
-            android:name=".MainActivity"
-            android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar">
+        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -20,13 +19,13 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MovieDetailActivity"
-            android:parentActivityName=".MainActivity"
-            android:theme="@style/AppTheme.NoActionBar">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="me.eirinimitsopoulou.popularmovies.MainActivity" />
-        </activity>
+            android:name=".DetailActivity"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+
+        <provider
+            android:name="me.eirinimitsopoulou.popularmovies.Data.FavouriteProvider"
+            android:authorities="com.example.android.mypopularmoviesapp"
+            android:exported="false"/>
     </application>
 
 </manifest>
