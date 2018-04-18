@@ -1,8 +1,8 @@
 # Popular Movies App
 
-## API Key
+## Instalation 
 
-The app uses [The Movie Database](http://themoviedb.org) API to get movie information and posters. You must provide your own API key in order to build the app. When you obtain API key, replace YOUR_API_KEY with your API key in the~/.gradle/gradle.properties file.
+The app uses [The Movie Database](http://themoviedb.org) API to get movie information and posters. You must provide your own API key in order to build the app. When you obtain API key, replace YOUR_API_KEY with your API key in the ~/.gradle/gradle.properties file.
 ```
 buildTypes.each {
         it.buildConfigField 'String', 'API_KEY', api_key
