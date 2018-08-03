@@ -12,8 +12,7 @@ buildTypes.each {
 }
 ```
 ## Screenshots
-![rsz_38929766-1b701ba2-4316-11e8-9689-9a26e9317cbc](https://user-images.githubusercontent.com/16197563/41191058-3da3789a-6bf2-11e8-9afa-bcffdf26402c.png) ![rsz_38929767-1b9563bc-4316-11e8-8bf0-c3f714dd1745](https://user-images.githubusercontent.com/16197563/41191059-426f856c-6bf2-11e8-907d-bb3e6d6f641a.png) ![rsz_38929768-1bb93d14-4316-11e8-8eef-66d08b5dcc54](https://user-images.githubusercontent.com/16197563/41191060-439b7ac2-6bf2-11e8-87b6-5b3897c14949.png)
-
+![webp net-resizeimage](https://user-images.githubusercontent.com/16197563/43660582-1d3fdb24-9768-11e8-8a8c-b94730d54efa.png)![webp net-resizeimage](https://user-images.githubusercontent.com/16197563/43660708-7a1a5bda-9768-11e8-87b7-06784c676fa6.png)![webp net-resizeimage](https://user-images.githubusercontent.com/16197563/43660609-31049eba-9768-11e8-867b-252f1ee3f7ee.png)
 ## Libraries
 * [Picasso](https://github.com/square/picasso)
 * [ButterKnife](https://github.com/JakeWharton/butterknife)
